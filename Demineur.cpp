@@ -3,12 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <stdlib.h>
 #include <time.h>
-#include <stdio.h>
-#include <cstdlib>
-#include <chrono>
-#include <thread>
 #include "libs/termkit/termkit.cpp"
 #include "libs/termkit/termkit.hpp"
 
