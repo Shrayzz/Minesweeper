@@ -671,7 +671,7 @@ int main()
     //    cout << endl;
     //
 
-    cout << "                                                                                          Il reste 10 bombes restantes" << endl; 
+    cout << "Il reste 10 bombes restantes" << endl; 
     cout << endl;
     while (bombCounter != 0) {
         interaction(mask, Tab, max_c, max_l);
