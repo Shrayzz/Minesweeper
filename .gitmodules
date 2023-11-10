@@ -1,0 +1,3 @@
+[submodule "libs/termkit"]
+	path = libs/termkit
+	url = git@github.com:dev-du-bled/termkit.git
