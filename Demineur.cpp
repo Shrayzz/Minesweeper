@@ -626,7 +626,7 @@ void numBombes(char mask[16][30], int max_c, int max_l)
     }
 }
 
-void startDemineur()
+int main()
 {
 
     char Tab[16][30];
