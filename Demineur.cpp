@@ -179,7 +179,7 @@ void affGrille(char Tab[16][30], int &max_c, int &max_l) {
     string bar = "  |";             // Sert a donner une meilleure esthetique au tableau (A"  |"  -)
 
 
-    cout << "#  #  1  2  3  4  5  6  7  8  9  #" << endl;       // Repérage chiffres pour Facile
+    cout << "#  #  1  2  3  4  5  6  7  8  9  #" << endl;       // Repérage chiffres
     cout << "#  +-----------------------------+" << endl;       // Haut du tableau
 
     
@@ -204,7 +204,7 @@ void affGrille(char Tab[16][30], int &max_c, int &max_l) {
     }
 
     cout << s;
-    cout << "#  +-----------------------------+" << endl;       // Bas du tableau pour Facile
+    cout << "#  +-----------------------------+" << endl;       // Bas du tableau
 
 }
 
