@@ -1,7 +1,7 @@
 
 Demineur.cpp by Shrayzz
 
-Lancez le démineur avvec Git Bash, Windows Terminal ou toute autre console pouvant compiler avec g++.
+Lancez le démineur avec Git Bash, Windows Terminal ou toute autre console pouvant compiler avec g++.
 Enjoy !
 
 []
