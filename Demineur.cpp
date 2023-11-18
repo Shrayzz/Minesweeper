@@ -7,10 +7,9 @@
 #include "libs/termkit/termkit.cpp"
 #include "libs/termkit/termkit.hpp"
 
-
 using namespace std;
 
-char bombe = '&';       // Variable globale des bombes
+const char bombe = '&';       // Variable globale des bombes
 int k, m;               // Variable globale : remplace les valeurs x et y, i et j...
 int bombCounter = 1;    // Variable globale du compteur de bombes : initialisée à 1 autre que 0 (conflit avec le main sinon)
 
@@ -24,7 +23,7 @@ oooooooooo.                                o8o                  By Axel MAS
 888      888 888ooo888  888   888   888   888   888   888  888ooo888  888   888   888    
 888     d88' 888    .o  888   888   888   888   888   888  888    .o  888   888   888    
 o888bood8P'  `Y8bod8P' o888o o888o o888o o888o o888o o888o `Y8bod8P' `V88V"V8P' d888b  
-    )", 90);
+    )", 90)<<endl;
 }
 
 void regles() { 
@@ -56,7 +55,7 @@ void regles() {
     -> Soyez attentif aux modeles : Au fur et a mesure que vous jouez, vous remarquerez peut-etre des motifs recurrents dans la disposition des mines. Apprendre
     a reconnaitre ces modeles peut vous aider a anticiper les emplacements des mines et a prendre des decisions plus eclairees.
 
-    Avec de la pratique et de l'experience, vous deviendrez de plus en plus habile a anticiper les emplacements des mines et a eviter les explosions. Bonne chance ! )";
+    Avec de la pratique et de l'experience, vous deviendrez de plus en plus habile a anticiper les emplacements des mines et a eviter les explosions. Bonne chance ! )" << endl;
 }
 
 void grille(char Tab[16][30], int &max_c, int &max_l) {
@@ -591,7 +590,7 @@ int main()
 
     char Tab[16][30];
     char mask[16][30];
-    int max_c, max_l, d;
+    int max_c, max_l;
 
     debut();
     graff();
@@ -626,7 +625,7 @@ int main()
     //    cout << endl;
     //
 
-    cout << "                                                                                          Il reste 10 bombes restantes" << endl; 
+    cout << termkit::center_line("Il reste 10 bombes restantes") << endl; 
     cout << endl;
     while (bombCounter != 0) {
         interaction(mask, Tab, max_c, max_l);
