@@ -13,6 +13,16 @@ const char bombe = '&';       // Variable globale des bombes
 int k, m;               // Variable globale : remplace les valeurs x et y, i et j...
 int bombCounter = 1;    // Variable globale du compteur de bombes : initialisée à 1 autre que 0 (conflit avec le main sinon)
 
+#if defined(unix) || defined(__APPLE__)
+void wait(unsigned seconds) {
+    sleep(seconds);
+}
+#elif defined(_WIN32) || defined(_WIN64)
+void wait(unsigned seconds) {
+    Sleep(seconds*1000);
+}
+#endif
+
 void graff() {  
 
     cout << termkit::center_text_block(R"(
@@ -98,7 +108,7 @@ void debut() {
             cout << "La valeur rentree n'est pas bonne, merci de rentrer Y." << endl;
             cout << "Veuillez reessayer !!" << endl;
             cout << endl;
-            sleep(1);
+            wait(1);
             debut();
         }
     }
@@ -110,7 +120,7 @@ void debut() {
         cout << "La valeur rentree n'est pas bonne, merci de rentrer Y ou N." << endl;
         cout << "Veuillez reessayer !!" << endl;
         cout << endl;
-        sleep(1);
+        wait(1);
         debut();
     }
 }
@@ -137,7 +147,7 @@ string init(char Tab[16][30], int &max_c, int &max_l) {
 
 void affGrille(char Tab[16][30], int &max_c, int &max_l) {
 
-    sleep(5);
+    wait(5);
     termkit::clear();
     graff();
 
@@ -342,7 +352,7 @@ void finPartie(char Tab[16][30], char mask[16][30], int &max_c, int &max_l) {
         cout << "-> / = Drapeau invalide" << endl;                  
         cout << endl;
 
-        sleep(5);                                                                        // Cool down de 5s.
+        wait(5);                                                                        // Cool down de 5s.
         abort();                                                                            // Fin du jeu
     }
     else if (perdu == 0) {
@@ -352,7 +362,7 @@ void finPartie(char Tab[16][30], char mask[16][30], int &max_c, int &max_l) {
         cout << "Bravo !" << endl;
         cout << "Merci d'avoir joue au demineur ! \n";
         
-        sleep(5);                                                                        // Cool down de 5s.
+        wait(5);                                                                        // Cool down de 5s.
         abort();                                                                            // Fin du jeu
     }
 }
@@ -440,7 +450,7 @@ void interaction(char mask[16][30], char Tab[16][30], int &max_c, int &max_l) {
             cout << "Merci de respecter l'ordre Chiffre / Lettre !" << endl;
             cout << "Veuillez reessayer !" << endl;
             cout << endl;
-            sleep(10);
+            wait(10);
             termkit::clear();
             graff();
             interaction(mask, Tab, max_c, max_l);                                // Ré-éffectue interaction()
