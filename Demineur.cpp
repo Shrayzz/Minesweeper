@@ -3,93 +3,69 @@
 
 #include <iostream>
 #include <string>
-#include <stdlib.h>
 #include <time.h>
-#include <stdio.h>
-#include <cstdlib>
-#include <windows.h>
-#include <chrono>
-#include <thread>
+#include "libs/termkit/termkit.cpp"
+#include "libs/termkit/termkit.hpp"
 
 using namespace std;
-#include "clearConsole.hpp"
-#include "ctrl_c.hpp"
 
-char bombe = '&';       // Variable globale des bombes
+const char bombe = '&';       // Variable globale des bombes
 int k, m;               // Variable globale : remplace les valeurs x et y, i et j...
 int bombCounter = 1;    // Variable globale du compteur de bombes : initialisée à 1 autre que 0 (conflit avec le main sinon)
 
+#if defined(unix) || defined(__APPLE__)
+void wait(unsigned seconds) {
+    sleep(seconds);
+}
+#elif defined(_WIN32) || defined(_WIN64)
+void wait(unsigned seconds) {
+    Sleep(seconds*1000);
+}
+#endif
+
 void graff() {  
 
-    cout << endl;
-    cout << endl;
-    cout << endl;                   // Titre principal (toujours affiché)
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
-    cout << "oooooooooo.                                o8o                  By Axel MAS                " << endl;
-    cout << "`888''  `Y8b                               `\"'                                             " << endl;
-    cout << " 888      888  .ooooo.  ooo. .oo.  .oo.   oooo  ooo. .oo.    .ooooo.  oooo  oooo  oooo d8b " << endl;
-    cout << " 888      888 d88' `88b `888P\"Y88bP\"Y88b  `888  `888P\"Y88b  d88' `88b `888  `888  `888\"\"8P " << endl;
-    cout << " 888      888 888ooo888  888   888   888   888   888   888  888ooo888  888   888   888     " << endl;
-    cout << " 888     d88' 888    .o  888   888   888   888   888   888  888    .o  888   888   888     " << endl;
-    cout << "o888bood8P'   `Y8bod8P' o888o o888o o888o o888o o888o o888o `Y8bod8P'  `V88V\"V8P' d888b    " << endl;
-    cout << endl;
-    cout << endl;
-    cout << endl;
+    cout << termkit::center_text_block(R"(
+oooooooooo.                                o8o                  By Axel MAS              
+888     `Y8b                               `"'                                           
+888      888  .ooooo.  ooo. .oo.  .oo.   oooo  ooo. .oo.    .ooooo.  oooo  oooo  oooo d8b
+888      888 d88   88b  888P  Y88bP Y88b  888   888P  Y88b d88' `88b  888   888   888""8P
+888      888 888ooo888  888   888   888   888   888   888  888ooo888  888   888   888    
+888     d88' 888    .o  888   888   888   888   888   888  888    .o  888   888   888    
+o888bood8P'  `Y8bod8P' o888o o888o o888o o888o o888o o888o `Y8bod8P' `V88V"V8P' d888b  
+    )", 90)<<endl;
 }
 
 void regles() { 
 // Règles & astuces
-    clearConsole();
+    termkit::clear();
     graff();
 
+    cout << R"(+------## REGLES ##------+
 
-    cout << "+------## REGLES ##------+" << endl;
-    cout << endl;
+    Le joueur selectionne une case sur la grille, et cette case revele un nombre qui indique le nombre de mines se trouvant dans les cases adjacentes.
+    En utilisant ces informations, vous devez deduire l'emplacement des mines et les marquer avec des drapeaux pour les eviter.
+    La strategie et la logique sont essentielles pour reussir au Demineur. vous devez faire preuve de prudence et de reflexion pour eviter les cases piegees
+    tout en decouvrant les cases sures.
+    Chaque decision compte, car une erreur peut conduire a une explosion et a la fin de la partie.
+    En fonction de la taille de la grille et du nombre de mines, le niveaux de difficulte sera evolutif. Ce jeu captivant et stimulant met a l'epreuve les
+    competences analytiques et la prise de decision du joueur.
 
-    cout << "Le joueur selectionne une case sur la grille, et cette case revele un nombre qui indique le nombre de mines se trouvant dans les cases adjacentes." << endl;
-    cout << "En utilisant ces informations, vous devez deduire l'emplacement des mines et les marquer avec des drapeaux pour les eviter." << endl;
-    cout << endl;
-    cout << "La strategie et la logique sont essentielles pour reussir au Demineur. vous devez faire preuve de prudence et de reflexion pour eviter les cases piegees" << endl;
-    cout << "tout en decouvrant les cases sures." << endl;
-    cout << "Chaque decision compte, car une erreur peut conduire a une explosion et a la fin de la partie." << endl;
-    cout << endl;
-    cout << "En fonction de la taille de la grille et du nombre de mines, le niveaux de difficulte sera evolutif. Ce jeu captivant et stimulant met a l'epreuve les" << endl;
-    cout << "competences analytiques et la prise de decision du joueur." << endl;
-    cout << endl;
+    +-----## ASTUCES ##-----+
 
-    cout << "+-----## ASTUCES ##-----+" << endl;
-    cout << endl;
+    -> Commencez par les cases sures : Avant de prendre des risques, commencez par reveler les cases qui sont entourees par un grand nombre de cases deja
+    revelees. Cela reduit les possibilites d'explosion et vous donne plus d'infos pour prendre des decisions.
+    -> Analysez les chiffres : Les chiffres indiquent le nombre de mines adjacentes a une case. Utilisez ces informations pour deduire les emplacements
+    possibles des mines. Si une case a un chiffre eleve, cela signifie qu'il y a plusieurs mines a proximite, alors que si elle a un chiffre bas, cela indique
+    moins de mines autour.
+    -> Marquez les mines potentielles : Si vous suspectez la presence d'une mine, marquez-la avec un drapeau ou un symbole approprie. Cela vous aide a eviter
+    de cliquer accidentellement sur cette case et a garder une trace des emplacements probables des mines.
+    -> Utilisez les indices : Parfois, vous atteindrez une situation ou toutes les cases environnantes d'un chiffre donne ont ete revelees. Cela signifie que
+    les mines restantes doivent se trouver ailleurs. Profitez de cette information pour explorer de nouvelles zones et reduire les possibilites.
+    -> Soyez attentif aux modeles : Au fur et a mesure que vous jouez, vous remarquerez peut-etre des motifs recurrents dans la disposition des mines. Apprendre
+    a reconnaitre ces modeles peut vous aider a anticiper les emplacements des mines et a prendre des decisions plus eclairees.
 
-    cout << "-> Commencez par les cases sures : Avant de prendre des risques, commencez par reveler les cases qui sont entourees par un grand nombre de cases deja" << endl;
-    cout << "revelees. Cela reduit les possibilites d'explosion et vous donne plus d'infos pour prendre des decisions." << endl;
-    cout << endl;
-    cout << "-> Analysez les chiffres : Les chiffres indiquent le nombre de mines adjacentes a une case. Utilisez ces informations pour deduire les emplacements" << endl;
-    cout << "possibles des mines. Si une case a un chiffre eleve, cela signifie qu'il y a plusieurs mines a proximite, alors que si elle a un chiffre bas, cela indique" << endl;
-    cout << "moins de mines autour." << endl;
-    cout << endl;
-    cout << "-> Marquez les mines potentielles : Si vous suspectez la presence d'une mine, marquez-la avec un drapeau ou un symbole approprie. Cela vous aide a eviter" << endl;
-    cout << "de cliquer accidentellement sur cette case et a garder une trace des emplacements probables des mines." << endl;
-    cout << endl;
-    cout << "-> Utilisez les indices : Parfois, vous atteindrez une situation ou toutes les cases environnantes d'un chiffre donne ont ete revelees. Cela signifie que" << endl;
-    cout << "les mines restantes doivent se trouver ailleurs. Profitez de cette information pour explorer de nouvelles zones et reduire les possibilites." << endl;
-    cout << endl;
-    cout << "-> Soyez attentif aux modeles : Au fur et a mesure que vous jouez, vous remarquerez peut-etre des motifs recurrents dans la disposition des mines. Apprendre" << endl;
-    cout << "a reconnaitre ces modeles peut vous aider a anticiper les emplacements des mines et a prendre des decisions plus eclairees." << endl;
-    cout << endl;
-    cout << endl;
-
-    cout << "Avec de la pratique et de l'experience, vous deviendrez de plus en plus habile a anticiper les emplacements des mines et a eviter les explosions. Bonne chance !" << endl;
-    cout << endl;
+    Avec de la pratique et de l'experience, vous deviendrez de plus en plus habile a anticiper les emplacements des mines et a eviter les explosions. Bonne chance ! )" << endl;
 }
 
 void grille(char Tab[16][30], int &max_c, int &max_l) {
@@ -103,10 +79,11 @@ void grille(char Tab[16][30], int &max_c, int &max_l) {
 
 void debut() {
 
-    clearConsole();
+    termkit::clear();
     graff();
 
-    cout << "Bienvenue dans le jeu du Demineur !" << endl;
+    cout << endl;
+    cout << termkit::center_line("Bienvenue dans le jeu du Demineur !") << endl;
     cout << endl;
 
     char x;
@@ -125,25 +102,25 @@ void debut() {
         cin >> x;
 
         if (x == 'y' || x == 'Y') {
-            clearConsole();
+            termkit::clear();
         }
         else {
             cout << "La valeur rentree n'est pas bonne, merci de rentrer Y." << endl;
             cout << "Veuillez reessayer !!" << endl;
             cout << endl;
-            Sleep(1000);
+            wait(1);
             debut();
         }
     }
 
     else if (x == 'n' || x == 'N') {
-        clearConsole();
+        termkit::clear();
     }
     else {
         cout << "La valeur rentree n'est pas bonne, merci de rentrer Y ou N." << endl;
         cout << "Veuillez reessayer !!" << endl;
         cout << endl;
-        Sleep(1000);
+        wait(1);
         debut();
     }
 }
@@ -170,8 +147,8 @@ string init(char Tab[16][30], int &max_c, int &max_l) {
 
 void affGrille(char Tab[16][30], int &max_c, int &max_l) {
 
-    Sleep(500);
-    clearConsole();
+    wait(5);
+    termkit::clear();
     graff();
 
     int l = 64;                     // Dans la table ASCII : la valeur avant A vaut 64 en décimal // A = 65
@@ -375,11 +352,7 @@ void finPartie(char Tab[16][30], char mask[16][30], int &max_c, int &max_l) {
         cout << "-> / = Drapeau invalide" << endl;                  
         cout << endl;
 
-        Sleep(5000);                                                                        // Cool down de 5s.
-        keybd_event(VK_MENU, 0x38, 0, 0);                 // Appuie sur ALT                 // Plein-écran automatique 
-        keybd_event(VK_RETURN, 0x1c, 0, 0);               // Appuie ENTREE                  // Enlever les commentaires si jeu sans menu
-        keybd_event(VK_RETURN, 0x1c, KEYEVENTF_KEYUP, 0); // Relache ENTREE
-        keybd_event(VK_MENU, 0x38, KEYEVENTF_KEYUP, 0);   // Relache ALT
+        wait(5);                                                                        // Cool down de 5s.
         abort();                                                                            // Fin du jeu
     }
     else if (perdu == 0) {
@@ -389,11 +362,7 @@ void finPartie(char Tab[16][30], char mask[16][30], int &max_c, int &max_l) {
         cout << "Bravo !" << endl;
         cout << "Merci d'avoir joue au demineur ! \n";
         
-        Sleep(5000);                                                                        // Cool down de 5s.
-        keybd_event(VK_MENU, 0x38, 0, 0);                 // Appuie sur ALT                 // Plein-écran automatique 
-        keybd_event(VK_RETURN, 0x1c, 0, 0);               // Appuie ENTREE                  // Enlever les commentaires si jeu sans menu
-        keybd_event(VK_RETURN, 0x1c, KEYEVENTF_KEYUP, 0); // Relache ENTREE
-        keybd_event(VK_MENU, 0x38, KEYEVENTF_KEYUP, 0);   // Relache ALT
+        wait(5);                                                                        // Cool down de 5s.
         abort();                                                                            // Fin du jeu
     }
 }
@@ -481,8 +450,8 @@ void interaction(char mask[16][30], char Tab[16][30], int &max_c, int &max_l) {
             cout << "Merci de respecter l'ordre Chiffre / Lettre !" << endl;
             cout << "Veuillez reessayer !" << endl;
             cout << endl;
-            Sleep(1000);
-            clearConsole();
+            wait(10);
+            termkit::clear();
             graff();
             interaction(mask, Tab, max_c, max_l);                                // Ré-éffectue interaction()
         }
@@ -506,7 +475,7 @@ void interaction(char mask[16][30], char Tab[16][30], int &max_c, int &max_l) {
     }
 
     else if (mask[y][x] == '-') {
-        Tab[y][x] == ' ';
+        Tab[y][x] = ' ';
         tiretAutour(mask, Tab, max_c, max_l, y, x);
     }
 
@@ -631,13 +600,8 @@ int main()
 
     char Tab[16][30];
     char mask[16][30];
-    int max_c, max_l, d;
+    int max_c, max_l;
 
-        keybd_event(VK_MENU, 0x38, 0, 0);                 // Appuie sur ALT                  // Plein-écran automatique 
-        keybd_event(VK_RETURN, 0x1c, 0, 0);               // Appuie ENTREE                   // Enlever les commentaires si jeu sans menu
-        keybd_event(VK_RETURN, 0x1c, KEYEVENTF_KEYUP, 0); // Relache ENTREE
-        keybd_event(VK_MENU, 0x38, KEYEVENTF_KEYUP, 0);   // Relache ALT
-    
     debut();
     graff();
     grille(Tab, max_c, max_l);
@@ -671,7 +635,7 @@ int main()
     //    cout << endl;
     //
 
-    cout << "                                                                                          Il reste 10 bombes restantes" << endl; 
+    cout << termkit::center_line("Il reste 10 bombes restantes") << endl; 
     cout << endl;
     while (bombCounter != 0) {
         interaction(mask, Tab, max_c, max_l);
